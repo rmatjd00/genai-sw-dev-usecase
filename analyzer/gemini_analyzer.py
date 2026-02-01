@@ -29,7 +29,19 @@ class CareerSentinelAnalyzer:
         
         try:
             response = self.model.generate_content(prompt)
+            
+            # Check if response has candidates before accessing text
+            # response.text may raise AttributeError if content generation fails
+            # or is blocked by safety filters
+            if not response.candidates:
+                block_reason = "Unknown"
+                if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
+                    block_reason = getattr(response.prompt_feedback, 'block_reason', 'Unknown')
+                return f"Content generation blocked. Reason: {block_reason}"
+            
             return response.text
+        except AttributeError as e:
+            return f"Error accessing response content (possibly blocked by safety filters): {e}"
         except Exception as e:
             return f"Error analyzing job: {e}"
 
