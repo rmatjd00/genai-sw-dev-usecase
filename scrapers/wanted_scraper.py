@@ -32,7 +32,7 @@ class WantedScraper:
             }
             
             try:
-                response = requests.get(self.api_url, params=params)
+                response = requests.get(self.api_url, params=params, timeout=30)
                 if response.status_code == 200:
                     data = response.json()
                     jobs = data.get('data', [])
@@ -55,7 +55,7 @@ class WantedScraper:
         """
         url = f"{self.api_url}/{job_id}"
         try:
-            response = requests.get(url)
+            response = requests.get(url, timeout=30)
             if response.status_code == 200:
                 data = response.json()
                 job = data.get('job', {})
